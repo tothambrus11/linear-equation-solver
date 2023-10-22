@@ -32,6 +32,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@sveltejs/adapter-static": "^2.0.3",
+		"@sveltejs/adapter-vercel": "^3.0.3",
 		"fraction.js": "^4.2.0",
 		"katex": "^0.16.4",
 		"sass": "^1.58.0"
