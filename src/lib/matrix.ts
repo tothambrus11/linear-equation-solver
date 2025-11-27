@@ -107,7 +107,7 @@ export function solveEquationMatrix(matrix: Fraction[][]) {
 		for (let i = 0; i < row.length - 1; i++) {
 			const cell = row[i];
 			if (cell.equals(0)) continue;
-			lhs.push({ variable: i + 1, coefficient: cell });
+			lhs.push({ variable: i, coefficient: cell });
 		}
 		const rhs = row[row.length - 1];
 		if (lhs.length === 0) {
