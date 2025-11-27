@@ -43,6 +43,15 @@
 		setSize();
 	}
 
+	function onCellChanged(i: number, j: number, e: Event) {
+		const target = e.target as HTMLInputElement;
+		const newValue = target.value === '' ? 0 : Number(target.value);
+		matrix[i][j] = newValue;
+		// Create a new array reference to ensure reactivity
+		matrix = [...matrix];
+		onmatrixChanged(matrix);
+	}
+
 	$effect(() => {
 		onmatrixChanged(matrix);
 	});
@@ -68,7 +77,7 @@
 			<tr>
 				{#each row as cell, j}
 					<td>
-						<input type='number' bind:value={matrix[i][j]}>
+						<input type='number' value={matrix[i][j]} oninput={(e) => onCellChanged(i, j, e)}>
 					</td>
 				{/each}
 			</tr>
