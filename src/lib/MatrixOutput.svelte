@@ -1,9 +1,9 @@
 <script lang='ts'>
-	export let matrices: string[] = [];
+	let { matrices = [] }: { matrices: string[] } = $props();
 
 	import katex from 'katex';
 
-	$: latexString = matrices.join(" = ");
+	let latexString = $derived(matrices.join(" = "));
 </script>
 
 <div>

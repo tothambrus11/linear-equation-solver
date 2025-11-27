@@ -1,11 +1,14 @@
 <script lang='ts'>
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 
-	export let columnCount = 1;
-	export let rowCount = 1;
-	export let rowsFixed = false;
-	export let columnsFixed = false;
-	export let matrix = [];
+	let {
+		columnCount = $bindable(1),
+		rowCount = $bindable(1),
+		rowsFixed = false,
+		columnsFixed = false,
+		matrix = $bindable([]),
+		onmatrixChanged = (m: number[][]) => {}
+	} = $props();
 
 	function setSize() {
 		let tempMatrix = [];
@@ -17,32 +20,32 @@
 			tempMatrix.push(row);
 		}
 		matrix = tempMatrix;
+		onmatrixChanged(matrix);
 	}
 
 	onMount(() => {
 		setSize();
 	});
 
-	const dispatch = createEventDispatcher();
-
-
-	function onColumnCountChanged(e: InputEvent) {
-		if (e.target.value === '') return;
-		if (e.target.value < 1) e.target.value = '1';
-		columnCount = e.target.value;
+	function onColumnCountChanged(e: Event) {
+		const target = e.target as HTMLInputElement;
+		if (target.value === '') return;
+		if (Number(target.value) < 1) target.value = '1';
+		columnCount = Number(target.value);
 		setSize();
 	}
 
-	function onRowCountChanged(e: InputEvent) {
-		if (e.target.value === '') return;
-		if (e.target.value < 1) e.target.value = '1';
-		rowCount = e.target.value;
+	function onRowCountChanged(e: Event) {
+		const target = e.target as HTMLInputElement;
+		if (target.value === '') return;
+		if (Number(target.value) < 1) target.value = '1';
+		rowCount = Number(target.value);
 		setSize();
 	}
 
-	$: {
-		dispatch("matrixChanged", matrix);
-	}
+	$effect(() => {
+		onmatrixChanged(matrix);
+	});
 
 </script>
 <div class='cont'>
@@ -50,30 +53,32 @@
 		{#if !columnsFixed}
 			<label for='column-count'>Column count:</label>
 			<input id='column-count' type='number' value={columnCount} min='1'
-						 on:input={onColumnCountChanged} class='outer-input'>
+						 oninput={onColumnCountChanged} class='outer-input'>
 		{/if}
 		{#if !rowsFixed}
 			<label for='row-count'>Row count:</label>
-			<input id='row-count' type='number' value={rowCount} min='1' on:input={onRowCountChanged}
+			<input id='row-count' type='number' value={rowCount} min='1' oninput={onRowCountChanged}
 						 class='outer-input'>
 		{/if}
 	</div>
 
 	<table class='grid'>
-		{#each matrix as row}
+		<tbody>
+		{#each matrix as row, i}
 			<tr>
-				{#each row as cell}
+				{#each row as cell, j}
 					<td>
-						<input type='number' bind:value={cell}>
+						<input type='number' bind:value={matrix[i][j]}>
 					</td>
 				{/each}
 			</tr>
 		{/each}
+		</tbody>
 	</table>
 </div>
 
 <style lang='scss'>
-  @use "./colors";
+  @use "./colors" as *;
 
 	.cont{
 		display: flex;
@@ -89,11 +94,11 @@
   td {
     padding: 0;
     border-collapse: collapse;
-    border: 1px solid colors.$input-border;
+    border: 1px solid $input-border;
   }
 
   .outer-input {
-    outline: 1px solid colors.$input-border;
+    outline: 1px solid $input-border;
   }
 
   input {
@@ -102,22 +107,22 @@
     font-size: 1rem;
     font-family: inherit;
     padding: 10px;
-    color: colors.$text-color;
-    background-color: colors.$input-bg;
+    color: $text-color;
+    background-color: $input-bg;
     border: none;
 
     &:focus {
-      outline: 1px solid colors.$input-border-focus;
-      background-color: colors.$input-bg-focus;
+      outline: 1px solid $input-border-focus;
+      background-color: $input-bg-focus;
     }
   }
 
   .grid {
-    background-color:  colors.$input-border;
+    background-color: $input-border;
     border-collapse: collapse;
     border-radius: 5px;
 		overflow: hidden;
-		border: 1px solid green;
+		border: 1px solid $input-border;
 		box-sizing: border-box;
 	}
 
